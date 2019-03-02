@@ -1,0 +1,15 @@
+td, th {
+    min-width: 200px;
+    max-height: 300px;
+}
+
+#more-data {
+    display: block;
+    margin: auto;
+}
+
+.input-group {
+    margin: 5px;
+    width: 85%;
+    
+}
