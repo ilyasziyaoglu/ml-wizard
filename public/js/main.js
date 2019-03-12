@@ -1,18 +1,8 @@
-/*
-
-1 - Sınıflama:
-2 - Kümeleme:
-3 - Birliktelik Kuralları:
-4 - Tahminleyici Modelleme:
-5 - Veri Görselleştirme:
-6 - Değişim ve Sapma Tespiti Analizi:
-
-*/
-
 var input = document.getElementById("file")
 var printDf = document.getElementById("print-df")
 var calcDissims = document.getElementById("calc-dissims")
 var dissim = document.getElementById("dissim")
+var kmeans = document.getElementById("kmeans")
 
 function createElement(tag, prop){
     var element = document.createElement(tag)
@@ -57,4 +47,50 @@ dissim.onclick = function(){
     else {
         alert("You must choose columns for this operation!")
     }
+}
+
+var classes = []
+kmeans.onclick = function(){
+    $("#kmeans-modal").modal("show")
+}
+
+document.getElementById("kmeans-modal-submit").onclick = function(){
+    var classCount = Math.floor(document.getElementById("kmeans-modal-class-count").value)
+    var tolerance = Math.floor(document.getElementById("kmeans-modal-tolerance").value)
+    classes = prepareClasses(df.length, classCount)
+    //element counts for per center at the begining
+    elementCounts = new Array(classCount).fill(1)
+
+    kmeans(df, classes, classCount, elementCounts, tolerance)
+}
+
+headSelectOnChange = function(){
+    var cols = getSelectedCols()
+    for(var i = 0; i < cols.length; i++){
+        document.getElementById(cols[i]).value = this.value
+        onChangeAttrType(cols[i], this.value)
+    }
+}
+
+document.getElementById('sort').onclick = function(){
+    var col = getSelectedCols()[0]
+    sort(df, col, 'asc')
+    setTable(df)
+}
+
+document.getElementById('del-cols').onclick = function(){
+    var cols = getSelectedCols()
+    deleteCols(df, cols)
+    setTable(df)
+}
+
+document.getElementById('del-rows').onclick = function(){
+    var rows = getSelectedRows()
+    deleteRows(df, rows)
+    setTable(df)
+}
+
+document.getElementById('classes').onclick = function(){
+    var cols = getSelectedCols()
+    getClassifiedDf(df, classes, cols[0])
 }

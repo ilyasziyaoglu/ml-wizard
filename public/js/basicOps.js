@@ -190,5 +190,47 @@ function disSim(df, cols){
             }
             df.disSim[i].push(d/sumOfSigma)
         }
+        df.disSim[i].push(0)
     }
+}
+
+function sort(df, col, direction){
+    var temp
+    if(direction == 'asc'){
+        for(var i = 1; i < df.length; i++){
+            var state = 1
+            for(var j = 0; j < df.length-1; j++){
+                if(df[col].data[j] > df[col].data[j+1]){
+                    state = 0
+                    for(var k = 0; k < df.headers.length; k++){
+                        temp = df[df.headers[k]].data[j]
+                        df[df.headers[k]].data[j] = df[df.headers[k]].data[j+1]
+                        df[df.headers[k]].data[j+1] = temp
+                    }
+                }
+            }
+            if(state){
+                return df
+            }
+        }
+    }
+    else if(direction == 'desc'){
+        for(var i = 1; i < df.length; i++){
+            var state = 1
+            for(var j = 0; j < df.length-1; j++){
+                if(df[col].data[j] < df[col].data[j+1]){
+                    state = 0
+                    for(var k = 0; k < df.headers.length; k++){
+                        temp = df[df.headers[k]].data[j]
+                        df[df.headers[k]].data[j] = df[df.headers[k]].data[j+1]
+                        df[df.headers[k]].data[j+1] = temp
+                    }
+                }
+            }
+            if(state){
+                return df
+            }
+        }
+    }
+    return df
 }

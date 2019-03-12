@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <script src="js/socket.io.js"></script>
+    <!--
     <script>
         var socket = io()
 
@@ -17,23 +18,35 @@
             socket.emit('print-reply', "sana da merhaba")
         })
     </script>
+    -->
 </head>
 <body>
 
     <div class="container">
         <div id="options" class="row">
             <input id="file" type="file">
-            <select id="df-type">
-                <option value="colon-based" selected>Colon Based</option>
-                <option value="row-based">Row Based</option>
+            <select id="data-type">
+                <option value="csv" selected>CSV</option>
             </select>
+            <label for="enable-charts">Enable Charts: </label>
+            <input id="enable-charts" type="checkbox" style="margin: 7px;">
+
         
-            <button id="print-df" type="button">Print DF</button>
+            <button id="print-df" type="button">Set Table</button>
             <button id="to-binary" type="button">To Binary</button>
             <button id="ordinal-to-numeric" type="button">Ordinal To Numeric</button>
             <button id="normalize" type="button">Normalize</button>
             <button id="calc-dissims" type="button">Calc Dissims</button>
             <button id="dissim" type="button">Dissims</button>
+            <button id="kmeans" type="button">K-Means</button>
+            <button id="line-chart" type="button">Line Chart</button>
+            <button id="histogram-chart" type="button">Histogram Chart</button>
+            <button id="sort" type="button">Sort</button>
+            <button id="del-cols" type="button">Delete Cols</button>
+            <button id="del-rows" type="button">Delete Rows</button>
+            <button id="classes" type="button">Classes</button>
+        </div>
+        <div class="row" id="charts">
         </div>
         <div id="data" class="row">
             <table id="table" class="table table-bordered">
@@ -69,13 +82,12 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button id="to-binary-modal-submit" type="button" class="btn btn-primary">Save changes</button>
+              <button id="to-binary-modal-submit" type="button" class="btn btn-primary">Ok</button>
             </div>
           </div>
         </div>
       </div>
 
-    <!-- MODALS -->
     <div id="ordinal-to-numeric-modal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -90,11 +102,65 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button id="ordinal-to-numeric-modal-submit" type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+              <button id="ordinal-to-numeric-modal-submit" type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
             </div>
           </div>
         </div>
       </div>
+
+    <div id="kmeans-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">K - Means</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="kmeans-modal-body" class="modal-body">
+              <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Class Count</span>
+                </div>
+                <input id="kmeans-modal-class-count" type="number" value="2" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+              </div><div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Tolerance</span>
+                </div>
+                <input id="kmeans-modal-tolerance" type="number" value="0.01" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button id="kmeans-modal-submit" type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      
+
+  <div id="line-chart-modal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Line Chart Options</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="line-chart-modal-body" class="modal-body">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button id="line-chart-modal-submit" type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
 
@@ -118,5 +184,7 @@
     <script src="js/table.js"></script>
     <script src="js/basicOps.js"></script>
     <script src="js/prepro.js"></script>
+    <script src="js/algs.js"></script>
+    <script src="js/charts.js"></script>
 </body>
 </html>
