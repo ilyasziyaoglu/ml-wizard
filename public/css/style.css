@@ -18,3 +18,8 @@
     border-color: gray;
     border-radius: 10px;
 }
+
+.bayes-delete-attr:hover {
+    cursor: pointer;
+    z-index: 100;
+}

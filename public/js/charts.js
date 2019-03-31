@@ -5,67 +5,6 @@ var layout = {height: 580};
 
 
 
-var lineChart = function(Y, X, labels, types, modes){
-    var row = createElement('div', {className: 'row', style: 'width: 100%;'})
-    charts.prepend(row)
-    row.appendChild(createElement('div', {id: "chart" + chartNumber, className: 'chart'}))
-    
-
-    var traces = []
-    for(var i = 0; i < labels.length; i++){
-        var trace = {
-            x: X,
-            y: Y[i],
-            mode: modes[i],
-            type: types[i],
-            name: labels[i]
-        }
-        traces.push(trace)
-    }
-        
-    Plotly.newPlot('chart' + chartNumber, traces, layout, {responsive: true});
-    row.appendChild(createElement('button', {type: 'button', className: 'close remove-chart', innerHTML: "&times;", style: 'height: 10px;'}))
-
-    $('.remove-chart').click(function(){
-        if(this && this.previousSibling){
-            this.previousSibling.remove()
-            this.remove()
-        }
-    })
-
-    chartNumber++
-}
-
-var histogram = function(X, labels){
-    var row = createElement('div', {className: 'row', style: 'width: 100%;'})
-    charts.prepend(row)
-    row.appendChild(createElement('div', {id: "chart" + chartNumber, className: 'chart'}))
-    
-
-    var traces = []
-    for(var i = 0; i < labels.length; i++){
-        var trace = {
-            x: X[i],
-            histogram: 'count',
-            name: labels[i],
-            type: 'histogram'
-        }
-        traces.push(trace)
-    }
-        
-    Plotly.newPlot('chart' + chartNumber, traces, layout, {responsive: true});
-    row.appendChild(createElement('button', {type: 'button', className: 'close remove-chart', innerHTML: "&times;", style: 'height: 10px;'}))
-
-    $('.remove-chart').click(function(){
-        if(this && this.previousSibling){
-            this.previousSibling.remove()
-            this.remove()
-        }
-    })
-
-    chartNumber++
-}
-
 document.getElementById('line-chart').onclick = function(){
     var modalBody = document.getElementById('line-chart-modal-body')
     modalBody.innerHTML = ""
@@ -139,8 +78,6 @@ document.getElementById('line-chart-modal-submit').onclick = function(){
     lineChart(Y, X, cols, types, modes)
 }
 
-
-
 document.getElementById('histogram-chart').onclick = function(){
     var cols = getSelectedCols()
     var X = []
@@ -148,4 +85,143 @@ document.getElementById('histogram-chart').onclick = function(){
         X.push(df[cols[i]].data)
     }
     histogram(X, cols)
+}
+
+var lineChart = function(Y, X, labels, types, modes){
+    var row = createElement('div', {className: 'row', style: 'width: 100%;'})
+    charts.prepend(row)
+    row.appendChild(createElement('div', {id: "chart" + chartNumber, className: 'chart'}))
+    
+
+    var traces = []
+    for(var i = 0; i < labels.length; i++){
+        var trace = {
+            x: X,
+            y: Y[i],
+            mode: modes[i],
+            type: types[i],
+            name: labels[i]
+        }
+        traces.push(trace)
+    }
+        
+    Plotly.newPlot('chart' + chartNumber, traces, layout, {responsive: true});
+    row.appendChild(createElement('button', {type: 'button', className: 'close remove-chart', innerHTML: "&times;", style: 'height: 10px;'}))
+
+    $('.remove-chart').click(function(){
+        if(this && this.previousSibling){
+            this.previousSibling.remove()
+            this.remove()
+        }
+    })
+
+    chartNumber++
+}
+
+var histogram = function(X, labels){
+    var row = createElement('div', {className: 'row', style: 'width: 100%;'})
+    charts.prepend(row)
+    row.appendChild(createElement('div', {id: "chart" + chartNumber, className: 'chart'}))
+    
+
+    var traces = []
+    for(var i = 0; i < labels.length; i++){
+        var trace = {
+            x: X[i],
+            histogram: 'count',
+            name: labels[i],
+            type: 'histogram'
+        }
+        traces.push(trace)
+    }
+        
+    Plotly.newPlot('chart' + chartNumber, traces, layout, {responsive: true});
+    row.appendChild(createElement('button', {type: 'button', className: 'close remove-chart', innerHTML: "&times;", style: 'height: 10px;'}))
+
+    $('.remove-chart').click(function(){
+        if(this && this.previousSibling){
+            this.previousSibling.remove()
+            this.remove()
+        }
+    })
+
+    chartNumber++
+}
+
+var cmap = function(zValues, xValues, yValues){
+    var row = createElement('div', {className: 'row', style: 'width: 100%;'})
+    charts.prepend(row)
+    row.appendChild(createElement('div', {id: "chart" + chartNumber, className: 'chart'}))
+
+    var colorscaleValue = [
+        [-1, '#3D9970'],
+        [1, '#001f3f']
+    ];
+    
+    var data = [{
+        x: xValues,
+        y: yValues,
+        z: zValues,
+        type: 'heatmap',
+        colorscale: colorscaleValue,
+        showscale: true
+    }];
+    
+    var layout = {
+        title: 'C - Map',
+        annotations: [],
+        xaxis: {
+        ticks: '',
+        side: 'top'
+        },
+        yaxis: {
+        ticks: '',
+        ticksuffix: ' ',
+        width: 700,
+        height: 700,
+        autosize: true
+        }
+    };
+    
+    if(xValues.length < 20 && yValues.length < 20){
+        for ( var i = 0; i < yValues.length; i++ ) {
+            for ( var j = 0; j < xValues.length; j++ ) {
+            var currentValue = zValues[i][j];
+            if (currentValue != 0.0) {
+                var textColor = 'white';
+            }else{
+                var textColor = 'black';
+            }
+            var result = {
+                xref: 'x1',
+                yref: 'y1',
+                x: xValues[j],
+                y: yValues[i],
+                text: Math.round(100 * zValues[i][j]) / 100,
+                font: {
+                family: 'Arial',
+                size: 12,
+                color: 'rgb(50, 171, 96)'
+                },
+                showarrow: false,
+                font: {
+                color: textColor
+                }
+            };
+            layout.annotations.push(result);
+            }
+        }
+    }
+    
+    Plotly.newPlot('chart' + chartNumber, data, layout, {showSendToCloud: true});
+    row.appendChild(createElement('button', {type: 'button', className: 'close remove-chart', innerHTML: "&times;", style: 'height: 10px;'}))
+
+    $('.remove-chart').click(function(){
+        if(this && this.previousSibling){
+            this.previousSibling.remove()
+            this.remove()
+        }
+    })
+
+    chartNumber++
 }

@@ -53,10 +53,13 @@ function missingValCount(arr){
 function distinctVals(arr){
     var distincts = []
     for(var i in arr){
-        var temp = arr[i].trim()
-        if(!distincts.includes(temp)){
-            distincts.push(temp)
+        try{
+            var temp = arr[i].trim()
+            if(!distincts.includes(temp)){
+                distincts.push(temp)
+            }
         }
+        catch{}
     }
     return distincts
 }
@@ -233,4 +236,64 @@ function sort(df, col, direction){
         }
     }
     return df
+}
+
+function innerProduct(arr){
+    var product = 1
+    for(var i = 0; i < arr.length; i++){
+        if($.isNumeric(arr[i])){
+            product *= arr[i]
+        }
+    }
+    return product
+}
+
+function outerProduct(arr1, arr2){
+    if(arr1.length == arr2.length){
+        var product = []
+        for(var i = 0; i < arr1.length; i++){
+            product.push(arr1[i] * arr2[i])
+        }
+        return product
+    }
+    else {
+        console.log("Array lengths are not equals!")
+    }
+}
+
+function innerSum(arr){
+    var sum = 0
+    for(var i = 0; i < arr.length; i++){
+        if($.isNumeric(arr[i])){
+            sum += arr[i]
+        }
+    }
+    return sum
+}
+
+function outerSum(arr1, arr2){
+    if(arr1.length == arr2.length){
+        var sum = []
+        for(var i = 0; i < arr1.length; i++){
+            sum.push(arr1[i] + arr2[i])
+        }
+        return sum
+    }
+    else {
+        console.log("Array lengths are not equals!")
+    }
+}
+
+function condProbab(X, Y, x, y){
+    var xycount = 0, ycount = 0
+    for(var i in Y){
+        if(x == X[i] && y == Y[i]){
+            xycount++
+        }
+        if(y == Y[i]){
+            ycount++
+        }
+    }
+    
+    return (xycount / ycount)
 }

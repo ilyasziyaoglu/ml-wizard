@@ -111,7 +111,13 @@ function normalize(arr, nmin, nmax){
         }
     }
     else {
-        arr[i] = c * (arr[i] - omin.val) + nmin
+        for(var i in arr){
+            arr[i] = c * (arr[i] - omin.val) + nmin
+        }
     }
     return arr
+}
+
+function norm(val, omax, omin, nmin, nmax){
+    return (nmax - nmin) * (val - omin) / (omax - omin) + nmin
 }
