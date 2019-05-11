@@ -59,7 +59,7 @@ function distinctVals(arr){
                 distincts.push(temp)
             }
         }
-        catch{}
+        catch(err){}
     }
     return distincts
 }
