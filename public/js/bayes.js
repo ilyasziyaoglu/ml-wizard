@@ -1,4 +1,4 @@
-document.getElementById('bayes').onclick = function(){
+/*document.getElementById('__bayes__').onclick = function(){
     var modalBody = document.getElementById('bayes-modal-body')
     modalBody.innerHTML = ""
     $('#bayes-modal').modal('show')
@@ -80,6 +80,55 @@ document.getElementById('bayes-modal-submit').onclick = function(){
     })
 
     chartNumber++
+}*/
+
+document.getElementById('bayes').onclick = function(){
+    var [modal, modal_body, modal_submit] = createModal('categorization-modal', 'Categorization')
+
+    var form  = createElement('form')
+    var form_group = createElement('div', {className: 'form-group'})
+    var predict_select_label = createElement('label', {innerText: 'Select predict feature:'})
+    var predict_select = createElement('select', {type: 'number', className: 'form-control'})
+    modal_body.appendChild(form)
+    form.appendChild(form_group)
+    form_group.appendChild(predict_select_label)
+    form_group.appendChild(predict_select)
+    $(modal).modal('show')
+
+    modal_submit.onclick = function(){
+        $(modal).modal('hide')
+        var predict = predict_select.value
+        modal.remove()
+
+        var cols = getSelectedCols()
+        var uneffectedCols = []
+        var effectedCols = []
+        for(var i in cols){
+            if((df[cols[i]].type == 'nominal' || df[cols[i]].type == 'ordinal') && cols[i] != predict){
+                effectedCols.push(cols[i])
+            }
+            else {
+                uneffectedCols.push(cols[i])
+            }
+        }
+        if(uneffectedCols.length > 0){
+            alert("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString())
+        }
+
+        var results = []
+        var [X_train, X_test] = trainTestSplit(df)
+        
+        for(var i = 0; i < X_test.length; i++){
+            var record = {}
+            for(var j in effectedCols){
+                record[effectedCols[j]] = X_test[effectedCols[j]].data[i]
+            }
+            result = bayes(X_train, effectedCols, predict)
+            results.push([X_test[predict].data[i], result])
+        }
+        console.log(results)
+        alert('Sonuçları şimdilik konsola yazdırdım skor kısmını halledene kadar...')
+    }
 }
 
 function bayes(df, X, predict){

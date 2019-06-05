@@ -1,8 +1,9 @@
-var input = document.getElementById("file")
-var printDf = document.getElementById("print-df")
+var openFile = document.getElementById("open-file-modal-submit")
+var file = document.getElementById('file')
 var calcDissims = document.getElementById("calc-dissims")
 var dissim = document.getElementById("dissim")
 var kmeans = document.getElementById("kmeans")
+var setTableButton = document.getElementById("set-table")
 
 function createElement(tag, prop){
     var element = document.createElement(tag)
@@ -14,54 +15,39 @@ function createElement(tag, prop){
 
 var df = undefined
 
-input.onchange = function(){
-    readCsv(input, function(data){
+openFile.onclick = function(){
+    readCsv(file, function(data){
         df = data
     })
 }
 
-printDf.onclick = function(){
+setTableButton.onclick = function(){
     setTable(df)
-}
-
-calcDissims.onclick = function(){
-    for(var i in df.headers){
-        switch(df[df.headers[i]].type){
-            case 'nominal': nominalDisSim(df, df.headers[i]); break;
-            case 'simbinary': binaryDisSim(df, df.headers[i]); break;
-            case 'asimbinary' : binaryDisSim(df, df.headers[i]); break;
-            case 'numeric' : numericDisSim(df, df.headers[i]); break;
-            default : console.log(df.headers[i]); break;
-        }
-        //console.log(df.headers[i] + " is ok")
-    }
-    console.log("all ok")
-}
-
-dissim.onclick = function(){
-    var cols = getSelectedCols()
-    if(cols.length){
-        disSim(df, cols)
-        console.log(df.disSim)
-    }
-    else {
-        alert("You must choose columns for this operation!")
-    }
 }
 
 var classes = []
 kmeans.onclick = function(){
+    var cols = df.headers
+    var select = document.getElementById('kmeans-modal-predict')
+    
+    for(var i in cols){
+        select.appendChild(createElement('option', {value: cols[i], innerText: cols[i]}))
+    }
     $("#kmeans-modal").modal("show")
 }
 
-document.getElementById("kmeans-modal-submit").onclick = function(){
+document.getElementById("kmeans-modal-submit").onclick = async function(){
     var classCount = Math.floor(document.getElementById("kmeans-modal-class-count").value)
     var tolerance = Math.floor(document.getElementById("kmeans-modal-tolerance").value)
-    classes = prepareClasses(df.length, classCount)
+    var kmeansPredict = document.getElementById('kmeans-modal-predict').value
     //element counts for per center at the begining
     elementCounts = new Array(classCount).fill(1)
 
-    kmeans(df, classes, classCount, elementCounts, tolerance)
+    await calcDissims()
+    await dissim()
+    classes = await prepareClasses(df.length, classCount)
+    await kmeans(df, classes, classCount, elementCounts, tolerance)
+    await getClassifiedDf(df, classes, kmeansPredict)
 }
 
 headSelectOnChange = function(){
@@ -90,7 +76,22 @@ document.getElementById('del-rows').onclick = function(){
     setTable(df)
 }
 
-document.getElementById('classes').onclick = function(){
-    var cols = getSelectedCols()
-    getClassifiedDf(df, classes, cols[0])
+function createModal(modal_id, modal_title){
+    var modal = createElement('div', {id: modal_id, className: 'modal', tabindex: "-1", role: "dialog"})
+        var modal_dialog = createElement('div', {className: 'modal-dialog', role: 'document'})
+            var modal_content = createElement('div', {className: 'modal-content'})
+                var modal_header = createElement('div', {className: 'modal-header'})
+                    modal_header.appendChild(createElement('h5', {innerText: modal_title, className: 'modal-title'}))
+                    modal_header.appendChild(createElement('button', {type: 'butoon', className: 'close', 'data-dismiss': 'modal', 'aria-label': 'Close', innerHTML: '<span aria-hidden="true">&times;</span>'}))
+                var modal_body = createElement('div', {className: 'modal-body'})
+                var modal_footer = createElement('div', {className: 'modal-footer'})
+                    var modal_submit = createElement('button', {type: 'button', 'data-dismiss': 'modal', className: 'btn btn-primary', innerText: 'Ok'})
+                    modal_footer.appendChild(modal_submit)
+
+                modal.appendChild(modal_dialog)
+                modal_dialog.appendChild(modal_content)
+                modal_content.appendChild(modal_header)
+                modal_content.appendChild(modal_body)
+                modal_content.appendChild(modal_footer)
+    return [modal, modal_body, modal_submit]
 }

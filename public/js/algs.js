@@ -1,3 +1,23 @@
+function calcDissims(){
+    for(var i in df.headers){
+        switch(df[df.headers[i]].type){
+            case 'nominal': nominalDisSim(df, df.headers[i]); break;
+            case 'numeric' : numericDisSim(df, df.headers[i]); break;
+            default : console.log(df.headers[i]); break;
+        }
+    }
+}
+
+function dissim(){
+    var cols = getSelectedCols()
+    if(cols.length){
+        disSim(df, cols)
+    }
+    else {
+        alert("You must choose columns for this operation!")
+    }
+}
+
 var prepareClasses = function(length, classCount){
     //preparing classes distributedly for effective begining
     var classes = []

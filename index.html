@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Online DM</title>
+    <title>DM Wizard</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
@@ -22,56 +22,226 @@
     -->
 </head>
 <body>
+    <ul class="nav nav-tabs" role="tablist"> 
+      <button id="open-file" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#open-file-modal">File</button>
+      <li class="nav-item"> 
+          <a class="nav-link active" href="#tab1" data-toggle="tab" role="tab" aria-controls="tab1" aria-expanded="true">Data</a> 
+      </li>     
+      <li class="nav-item"> 
+          <a class="nav-link" href="#tab2" data-toggle="tab" role="tab" aria-controls="tab2" aria-expanded="true">Visualization</a> 
+      </li>
+    </ul>
 
-    <div class="container">
-        <div id="options" class="row">
-            <input id="file" type="file">
-            <select id="data-type">
-                <option value="csv" selected>CSV</option>
-            </select>
-            <label for="enable-charts"> Enable Charts: </label>
-            <input id="enable-charts" type="checkbox" style="margin: 7px;">
+    <div class="tab-content">
+        <div class="tab-pane active" role="tabpanel" aria-labelledby="tab1-tab" id="tab1">
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="accordion" id="accordionExample">
+                      <div class="card">
+                        <div class="card-header" id="headingOne">
+                          <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                              Features
+                            </button>
+                          </h2>
+                        </div>
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                          <div class="card-body" style="font-weight: bold;">
+                            <label class="btn btn-secondary" style="width: 100%;"><input type="checkbox" id="enable-charts" value="option1"> <b>Enable Charts</b></label>
+                            <button id="set-table" class="btn btn-secondary" style="width: 100%;">Set Table</button>
+                            <hr>
+                            <ul id="feature-list"></ul>
+                            <hr>
+                            <ul id="data-shape" style="list-style: none;"></ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card">
+                        <div class="card-header" id="headingTwo">
+                          <h2 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                              Basic Operations  
+                            </button>
+                          </h2>
+                        </div>
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                          <div class="card-body">
+                            <div class="btn-group-vertical" role="group" aria-label="Vertical button group" style="display: block; margin: auto;">
+                              <button id="sort" type="button" class="btn btn-secondary">Sort</button>
+                              <button id="del-cols" type="button" class="btn btn-secondary">Delete Cols</button>
+                              <button id="del-rows" type="button" class="btn btn-secondary">Delete Rows</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card">
+                        <div class="card-header" id="headingThree">
+                          <h2 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                              Missing Data
+                            </button>
+                          </h2>
+                        </div>
+                        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                          <div class="card-body">
+                            <div class="btn-group-vertical" role="group" aria-label="Vertical button group" style="display: block; margin: auto;">
+                              <button id="mis-val-count" type="button" class="btn btn-secondary">Show Miss Counts</button>
+                              <button id="nan-novalue" type="button" class="btn btn-secondary">Fill NaNs NoValue</button>
+                              <button id="nan-mode" type="button" class="btn btn-secondary">Fill NaNs mode</button>
+                              <button id="nan-mean" type="button" class="btn btn-secondary">Fill NaNs mean</button>
+                              <button id="nan-median" type="button" class="btn btn-secondary">Fill NaNs median</button>
+                            </div>
 
-        
-            <button id="print-df" type="button">Set Table</button>
-            <button id="to-binary" type="button">To Binary</button>
-            <button id="ordinal-to-numeric" type="button">Ordinal To Numeric</button>
-            <button id="normalize" type="button">Normalize</button>
-            <button id="calc-dissims" type="button">Calc Dissims</button>
-            <button id="dissim" type="button">Dissims</button>
-            <button id="kmeans" type="button">K-Means</button>
-            <button id="classes" type="button">Classes</button>
-            <button id="line-chart" type="button">Line Chart</button>
-            <button id="regression" type="button">Regression</button>
-            <button id="correlation" type="button">Correlation</button>
-            <button id="histogram-chart" type="button">Histogram Chart</button>
-            <button id="sort" type="button">Sort</button>
-            <button id="del-cols" type="button">Delete Cols</button>
-            <button id="del-rows" type="button">Delete Rows</button>
-            <button id="bayes" type="button">Bayes</button>
+                            <form class="px-4 py-3" id="nan-number-form">
+                              <div class="form-group">
+                                <input type="number" class="form-control" id="nan-number" placeholder="Value here...">
+                              </div>
+                              <button class="btn btn-secondary">Fill NaNs above number</button>
+                            </form>
+
+                            <form class="px-4 py-3" id="nan-text-form">
+                              <div class="form-group">
+                                <input type="text" class="form-control" id="nan-text" placeholder="Value here...">
+                              </div>
+                              <button class="btn btn-secondary">Fill NaNs above text</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card">
+                        <div class="card-header" id="headingFour">
+                          <h2 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                              Preprocessing
+                            </button>
+                          </h2>
+                        </div>
+                        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+                          <div class="card-body">
+                            <div class="btn-group-vertical" role="group" aria-label="Vertical button group" style="display: block; margin: auto;">
+                              <button id="std-scaler" type="button" class="btn btn-secondary">Standard Scaler</button>
+                              <button id="min-max-scaler" type="button" class="btn btn-secondary">MinMax Scaler</button>
+                              <button id="nominal-encoder" type="button" class="btn btn-secondary">Nominal Encoder</button>
+                              <button id="ordinal-encoder" type="button" class="btn btn-secondary">Ordinal Encoder</button>
+                              <button id="label-decoder" type="button" class="btn btn-secondary">Label Decoder</button>
+                              <button id="one-hot-encoder" type="button" class="btn btn-secondary">One Hot Encoder</button>
+                              <button id="categorization" type="button" class="btn btn-secondary">Categorization</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card">
+                        <div class="card-header" id="headingFive">
+                          <h2 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                              Models
+                            </button>
+                          </h2>
+                        </div>
+                        <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
+                          <div class="card-body">
+                            <div class="btn-group-vertical" role="group" aria-label="Vertical button group" style="display: block; margin: auto;">
+                              <button id="bayes" type="button" class="btn btn-secondary">Bayes</button>
+                              <button id="kmeans" type="button" class="btn btn-secondary">K-Means</button>
+                              <button id="decision-tree" type="button" class="btn btn-secondary">Decision Tree</button>
+                              <button id="back-propagation" type="button" class="btn btn-secondary">Back Propagation</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card">
+                        <div class="card-header" id="headingSix">
+                          <h2 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                              Scores
+                            </button>
+                          </h2>
+                        </div>
+                        <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordionExample">
+                          <div class="card-body">
+                            pane6
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="col-sm-10">
+                    <div id="data" class="row">
+                        <table id="table" class="table table-bordered">
+                            <thead>
+                                <tr id="table-head">
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row" id="charts">
+        <div class="tab-pane" role="tabpanel" aria-labelledby="tab2-tab" id="tab2"><div class="row">
+            <div class="col-sm-2">
+                <h5 class="text-center">Features</h5>
+                <ul class="list-group">
+                  <button id="line-chart" type="button">Line Chart</button>
+                  <button id="regression" type="button">Regression</button>
+                  <button id="correlation" type="button">Correlation</button>
+                  <button id="histogram-chart" type="button">Histogram Chart</button>
+                </ul>
+            </div>
+            <div class="col-sm-10">
+                <div class="input-group"> 
+                    <div class="input-group-prepend"> 
+                        <div class="input-group-text">Column</div>                 
+                    </div>             
+                    <input type="text" class="form-control" placeholder="Feature or formula"> 
+                </div>
+                <div class="input-group"> 
+                    <div class="input-group-prepend"> 
+                        <div class="input-group-text">Row</div>                 
+                    </div>             
+                    <input type="text" class="form-control" placeholder="Feature or formula"> 
+                </div>
+
+                <div class="row" id="charts"></div>
+            </div>
         </div>
-        <div id="data" class="row">
-            <table id="table" class="table table-bordered">
-                <thead>
-                    <tr id="table-head">
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                </tbody>
-            </table>
-        </div>
-        <div class="row">
-            <button id="more-data" class="btn btn-primary">More Data...</button>
         </div>
     </div>
 
 
-
-
-
     <!-- MODALS -->
+
+  <div id="open-file-modal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Open File</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="to-binary-modal-body" class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="exampleInputEmail1">Source File</label>
+                <input id="file" type="file" class="form-control btn btn-secondary">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputEmail1">File Type</label>
+                <select id="data-type" class="btn btn-secondary form-control">
+                    <option value="csv" selected>CSV</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id="open-file-modal-submit" type="button" data-dismiss="modal" class="btn btn-primary">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="to-binary-modal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -106,7 +276,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button id="ordinal-to-numeric-modal-submit" type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+              <button id="ordinal-encoder-modal-submit" type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
             </div>
           </div>
         </div>
@@ -127,11 +297,18 @@
                   <span class="input-group-text" id="inputGroup-sizing-sm">Class Count</span>
                 </div>
                 <input id="kmeans-modal-class-count" type="number" value="2" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
-              </div><div class="input-group input-group-sm mb-3">
+              </div>
+              <div class="input-group input-group-sm mb-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text" id="inputGroup-sizing-sm">Tolerance</span>
                 </div>
                 <input id="kmeans-modal-tolerance" type="number" value="0.01" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+              </div>
+              <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Predict Feature</span>
+                </div>
+                <select id="kmeans-modal-predict" class="from-control"></select>
               </div>
             </div>
             <div class="modal-footer">
@@ -221,6 +398,7 @@
     <script src="js/data.js"></script>
     <script src="js/table.js"></script>
     <script src="js/basicOps.js"></script>
+    <script src="js/misdata.js"></script>
     <script src="js/prepro.js"></script>
     <script src="js/algs.js"></script>
     <script src="js/charts.js"></script>
@@ -228,5 +406,7 @@
     <script src="js/correlation.js"></script>
     <script src="js/bayes.js"></script>
     <script src="js/bpAlg.js"></script>
+    <script src="js/models.js"></script>
+    <script src="js/math.js"></script>
 </body>
 </html>

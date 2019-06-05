@@ -40,26 +40,12 @@ function count(arr, val){
     return count
 }
 
-function missingValCount(arr){
-    var count = 0
-    for(var i = 0; i < arr.length; i++){
-        if(arr[i] === "" || arr[i] === undefined){
-            count++
-        }
-    }
-    return count
-}
-
 function distinctVals(arr){
     var distincts = []
     for(var i in arr){
-        try{
-            var temp = arr[i].trim()
-            if(!distincts.includes(temp)){
-                distincts.push(temp)
-            }
+        if(!distincts.includes(arr[i])){
+            distincts.push(arr[i])
         }
-        catch(err){}
     }
     return distincts
 }
@@ -115,21 +101,6 @@ function nominalDisSim(df, col){
     }
 }
 
-function binaryDisSim(df, col){
-    df[col].disSim = []
-    for(var i = 0; i < df.length; i++){
-        df[col].disSim.push([])
-        for(var j = 0; j < i; j++){
-            if(df[col].data[i] == df[col].data[j]){
-                df[col].disSim[i].push(0)
-            }
-            else {
-                df[col].disSim[i].push(1)
-            }
-        }
-    }
-}
-
 function numericDisSim(df, col){
     df[col].disSim = []
     for(var i = 0; i < df.length; i++){
@@ -140,16 +111,15 @@ function numericDisSim(df, col){
     }
 }
 
-function euclideanDistance(obj1, obj2, weights){
+function euclideanDistance(obj1, obj2){
     var sum = 0
     for(var i in obj1){
-        sum += weights[i] * Math.pow(obj1[i] - obj2[i], 2)
+        sum += Math.pow(obj1[i] - obj2[i], 2)
     }
     return Math.sqrt(sum)
 }
 
 function euclideanDisSim(df){
-    getWeights()
     df.numeric = []
     for(var i = 0; i < df.length; i++){
         df.numeric.push([])
@@ -157,41 +127,27 @@ function euclideanDisSim(df){
             var rowj = getRow(df, j)
             var rowi = getRow(df, i)
             var tempLength = df.headers.length
-            var weights = []
             for(var k = 0; k < tempLength; k++){
                 if(!df.types.numeric.includes(df.headers[k])){
                     delete rowi[df.headers[k]]
                     delete rowj[df.headers[k]]
                 }
-                else{
-                    weights.push(df.weights[df.headers[k]])
-                }
             }
-            df.numeric[i].push(euclideanDistance(rowj, rowi, weights))
+            df.numeric[i].push(euclideanDistance(rowj, rowi))
         }
     }
 }
 
 function disSim(df, cols){
-    getWeights()
     df.disSim = []
     for(var i = 0; i < df.length; i++){
         df.disSim.push([])
         for(var j = 0; j < i; j++){
             var d = 0
-            var sumOfSigma = 0
             for(var k = 0; k < cols.length; k++){
-                var sigma = undefined
-                if(df[cols[k]].type == 'asimbinary' && df[cols[k]].data[i] == 0 && df[cols[k]].data[j] == 0){
-                    sigma = 0
-                }
-                else {
-                    sigma = 1
-                }
-                d += df.weights[cols[k]] * sigma * df[cols[k]].disSim[i][j]
-                sumOfSigma += sigma
+                d += df[cols[k]].disSim[i][j]
             }
-            df.disSim[i].push(d/sumOfSigma)
+            df.disSim[i].push(d/cols.length)
         }
         df.disSim[i].push(0)
     }
@@ -297,3 +253,127 @@ function condProbab(X, Y, x, y){
     
     return (xycount / ycount)
 }
+
+function mode(arr){
+    var values = {}
+    for(var i = 0; i < arr.length; i++){
+        if(arr[i] !== "" && arr[i] !== undefined){
+            if(values[arr[i]]){
+                values[arr[i]]++
+            }
+            else {
+                values[arr[i]] = 1
+            }
+        }
+    }
+
+    var maxCnt = 0
+    var maxVal
+    for(var val in values){
+        if(values[val] > maxCnt){
+            maxCnt = values[val]
+            maxVal = val
+        }
+    }
+    return maxVal
+}
+
+function mean(arr){
+    var sum = 0
+    var count = 0
+    for(var i  = 0; i < arr.length; i++){
+        if(arr[i] != "" && arr[i] != undefined){
+            sum += arr[i]
+            count++
+        }
+    }
+    return sum/count
+}
+
+function median(arr){
+    var middle = Math.round((arr.length +  (arr.length-missingValCount(arr)))/2)
+    return arr.slice().sort(function(a, b){return a - b})[middle]
+}
+
+function variance(arr){
+    var meanVal = mean(arr)
+    var sqrSum = 0
+    for(var i in arr){
+        if(arr[i] != "" && arr[i] != undefined){
+            sqrSum += (arr[i] - meanVal)**2
+        }
+    }
+    return sqrSum/(arr.length - missingValCount(arr))
+}
+
+function std(arr){
+    return Math.sqrt(variance(arr))
+}
+
+function df2matrix(df, transpose=false){
+    var cols = df.headers
+    var dfMatrix
+
+    if(transpose){
+        dfMatrix = math.zeros(cols.length, df.length)
+        for(var i in cols){
+            for(var j = 0; j < df.length; j++){
+                dfMatrix._data[i][j] = df[cols[i]].data[j]
+            }
+        }
+    }
+    else {
+        dfMatrix = math.zeros(df.length, cols.length)
+        for(var i = 0; i < df.length; i++){
+            for(var j in cols){
+                dfMatrix._data[i][j] = df[cols[j]].data[i]
+            }
+        }
+    }
+    return dfMatrix
+}
+
+function matrix2df(matrix, cols){
+    var newdf = {types: {nominal: [], numeric: [], ordinal: []}}
+    newdf.headers = cols
+    newdf.length = matrix._size[0]
+
+    for(var j in cols){
+        newdf[cols[j]] = {data: [], type: undefined}
+        for(var i = 0; i < matrix._size[0]; i++){
+            newdf[cols[j]].data.push(matrix._data[i][j])
+        }
+    }
+    return newdf
+}
+
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function range(start, stop, step) {
+    if (typeof stop == 'undefined') {
+        // one param defined
+        stop = start;
+        start = 0;
+    }
+
+    if (typeof step == 'undefined') {
+        step = 1;
+    }
+
+    if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
+        return [];
+    }
+
+    var result = [];
+    for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
+        result.push(i);
+    }
+
+    return result;
+};
