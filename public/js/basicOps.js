@@ -250,8 +250,15 @@ function condProbab(X, Y, x, y){
             ycount++
         }
     }
+    var condProb
+    if(!xycount){
+        condProb = (xycount+1) / (ycount+1)
+    }
+    else {
+        condProb = xycount/ycount
+    }
     
-    return (xycount / ycount)
+    return condProb
 }
 
 function mode(arr){
@@ -310,8 +317,10 @@ function std(arr){
     return Math.sqrt(variance(arr))
 }
 
-function df2matrix(df, transpose=false){
-    var cols = df.headers
+function df2matrix(df, cols, transpose=false){
+    if(!cols){
+        cols = df.headers
+    }
     var dfMatrix
 
     if(transpose){
@@ -333,9 +342,10 @@ function df2matrix(df, transpose=false){
     return dfMatrix
 }
 
-function matrix2df(matrix, cols){
+function matrix2df(matrix, cols, template){
     var newdf = {types: {nominal: [], numeric: [], ordinal: []}}
     newdf.headers = cols
+    newdf.template = template
     newdf.length = matrix._size[0]
 
     for(var j in cols){
@@ -376,4 +386,31 @@ function range(start, stop, step) {
     }
 
     return result;
-};
+}
+
+function filter(df, cols, vals){
+    var filteredDf = JSON.parse(JSON.stringify(df.template))
+    filteredDf.template = df.template
+
+    var count = 0
+    var state = true
+    for(var i = 0; i < df.length; i++){
+        state = true
+        for(var j in cols){
+            if(df[cols[j]].data[i] != vals[j]){
+                state = false
+                continue
+            }
+        }
+
+        if(state){
+            count++
+            for(var k in df.headers){
+                filteredDf[df.headers[k]].data.push(df[df.headers[k]].data[i])
+            }
+        }
+    }
+    filteredDf.length = count
+
+    return filteredDf
+}

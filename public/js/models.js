@@ -8,8 +8,8 @@ function trainTestSplit(df, testSize=0.33){
         newmatrix._data.push(matrix._data[sA[i]].slice())
     }
     var splitter = Math.floor(testSize*df.length)
-    var X_train = matrix2df(math.matrix(newmatrix._data.slice(splitter, df.length)), df.headers)
-    var X_test = matrix2df(math.matrix(newmatrix._data.slice(0, splitter)), df.headers)
+    var X_train = matrix2df(math.matrix(newmatrix._data.slice(splitter, df.length)), df.headers, df.template)
+    var X_test = matrix2df(math.matrix(newmatrix._data.slice(0, splitter)), df.headers, df.template)
     return [X_train, X_test]
 }
 

@@ -95,3 +95,13 @@ function createModal(modal_id, modal_title){
                 modal_content.appendChild(modal_footer)
     return [modal, modal_body, modal_submit]
 }
+
+function createFormGroup(form, input, labelText){
+    var form_group = createElement('div', {className: 'form-group'})
+    var label = createElement('label', {innerText: labelText})
+    form_group.appendChild(label)
+    input.className = 'form-control'
+    form_group.appendChild(input)
+    form.appendChild(form_group)
+    return form
+}

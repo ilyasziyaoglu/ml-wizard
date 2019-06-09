@@ -13,6 +13,7 @@ function readCsv(input, cb){
                         df[headers[i]] = {data: []}
                     }
                     df.headers = headers
+                    df.template = JSON.parse(JSON.stringify(df))
                     for(var i = 1; i < lines.length; i++){
                         var features = lines[i].trim().split(',')
                         for(var j = 0; j < headers.length; j++){

@@ -118,7 +118,7 @@ var lineChart = function(Y, X, labels, types, modes){
     chartNumber++
 }
 
-var histogram = function(X, labels){
+var histogram = function(X, labels, func){
     var row = createElement('div', {className: 'row', style: 'width: 100%;'})
     charts.prepend(row)
     row.appendChild(createElement('div', {id: "chart" + chartNumber, className: 'chart'}))
@@ -127,6 +127,7 @@ var histogram = function(X, labels){
     var traces = []
     for(var i = 0; i < labels.length; i++){
         var trace = {
+            histfunc: func,
             x: X[i],
             histogram: 'count',
             name: labels[i],

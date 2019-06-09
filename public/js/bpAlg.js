@@ -1,5 +1,138 @@
 var LEARNING_RATE = 0.5
 
+document.getElementById('back-propagation').onclick = function(){
+    var [modal, modal_body, modal_submit] = createModal('back-propagation-modal', 'Back Propagation')
+
+    var form  = createElement('form')
+
+    var learning_rate_input = createElement('input', {type: 'number', value: 0.5, placeholder: 'Learning Rate...'})
+    form = createFormGroup(form, learning_rate_input, 'Learning Rate')
+
+    var hidden_layer_neurons_input = createElement('input', {type: 'number', placeholder: 'Default equals input neurons...'})
+    form = createFormGroup(form, hidden_layer_neurons_input, 'Hiddern layer neurons count')
+
+    var epoch_input = createElement('input', {type: 'number', value: 10000, placeholder: 'Epoch count...'})
+    form = createFormGroup(form, epoch_input, 'Epoch')
+    
+    var predict_select = createElement('select', {type: 'number', multiple: true, className: 'form-control'})
+    var cols = df.headers
+    for(var i in cols){
+        predict_select.appendChild(createElement('option', {value: cols[i], innerText: cols[i]}))
+    }
+    form = createFormGroup(form, predict_select, 'Select predict feature')
+
+    modal_body.appendChild(form)
+    $(modal).modal('show')
+
+    modal_submit.onclick = async function(){
+        $(modal).modal('hide')
+        LEARNING_RATE = learning_rate_input.value
+        var hidden_layer_neurons = hidden_layer_neurons_input.value
+        var epoch = epoch_input.value
+        var predicts = predict_select.value
+        modal.remove()
+
+        var cols = getSelectedCols()
+
+        var uneffectedCols = []
+        var effectedCols = []
+        for(var i in cols){
+            if(df[cols[i]].type == 'numeric' && !predicts.includes(cols[i])){
+                effectedCols.push(cols[i])
+            }
+            else {
+                uneffectedCols.push(cols[i])
+            }
+        }
+        if(uneffectedCols.length > 0){
+            alert("Some features didn't effected! Because they may be target feature or their types are not numeric.\nThese features are: " + uneffectedCols.toString())
+        }
+
+        var [raw_X_train, raw_X_test] = trainTestSplit(df)
+        var cols = effectedCols.concat(predicts)
+        raw_X_train = df2matrix(raw_X_train, cols)
+        raw_X_test = df2matrix(raw_X_test, cols)
+
+        var X_train = []
+        var X_test = []
+        for(var i = 0; i < raw_X_train._size[0]; i++){
+            X_train.push([raw_X_train._data[i].slice(0, effectedCols.length), raw_X_train._data[i].slice(effectedCols.length, cols.length)])
+        }
+        for(var i = 0; i < raw_X_test._size[0].length; i++){
+            X_test.push([raw_X_test._data[i].slice(0, effectedCols.length), raw_X_test._data[i].slice(effectedCols.length, cols.length)])
+        }
+
+        if(!hidden_layer_neurons){
+            hidden_layer_neurons = effectedCols.length
+        }
+        var length = X_train.length
+        nn = new NeuralNetwork(effectedCols.length, hidden_layer_neurons, predicts.length)
+        for(var i = 0; i < epoch; i++){
+            r = getRandomInt(0, length)
+            training_inputs = X_train[r][0]
+            training_outputs = X_train[r][1]
+            console.log(training_inputs, training_outputs)
+            nn.train(training_inputs, training_outputs)
+            console.log(i, nn.calculate_total_error(X_train))
+        }
+        
+        var results = []
+        var result
+        for(var i = 0; i < X_test.length; i++){
+            result = await nn.feed_forward(X_test[i][0])
+            await results.push([X_test[i][1], result])
+        }
+        console.log(results)
+
+        var sayi = 0
+        for(var a in results){
+            if(results[a][0].toString() == results[a][1].toString()){
+                sayi++
+            }
+        }
+        console.log(sayi)
+    }
+}
+
+function treePredict(root, record){
+    if(root.branches){
+        treePredict(root.branches[record[root.name]])
+    }
+    else {
+        return root
+    }
+}
+
+// Blog post example:
+/*
+
+nn = new NeuralNetwork(2, 2, 2, hidden_layer_weights=[0.15, 0.2, 0.25, 0.3], hidden_layer_bias=0.35, output_layer_weights=[0.4, 0.45, 0.5, 0.55], output_layer_bias=0.6)
+for(var i = 0; i < 10000; i++){
+    nn.train([0.05, 0.1], [0.01, 0.99])
+    console.log(i, nn.calculate_total_error([[[0.05, 0.1], [0.01, 0.99]]]))
+}
+
+*/
+
+// XOR example:
+/*
+
+training_sets = [[[0, 0], [0]],[[0, 1], [1]],[[1, 0], [1]],[[1, 1], [0]]]
+
+ nn = new NeuralNetwork(training_sets[0][0].length, 5, training_sets[0][1].length)
+ for(var i = 0; i < 10000; i++){
+     r = getRandomInt(0, 4)
+     training_inputs = training_sets[r][0]
+     training_outputs = training_sets[r][1]
+     nn.train(training_inputs, training_outputs)
+     console.log(i, nn.calculate_total_error(training_sets))
+}
+
+*/
+
+
+
+
 var Neuron = class {
     constructor(bias) {
         this.bias = bias
@@ -249,31 +382,4 @@ function getRandomInt(min, max) {
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
-
-// Blog post example:
-/*
-
-nn = new NeuralNetwork(2, 2, 2, hidden_layer_weights=[0.15, 0.2, 0.25, 0.3], hidden_layer_bias=0.35, output_layer_weights=[0.4, 0.45, 0.5, 0.55], output_layer_bias=0.6)
-for(var i = 0; i < 10000; i++){
-    nn.train([0.05, 0.1], [0.01, 0.99])
-    console.log(i, nn.calculate_total_error([[[0.05, 0.1], [0.01, 0.99]]]))
-}
-
-*/
-
-// XOR example:
-/*
-
-training_sets = [[[0, 0], [0]],[[0, 1], [1]],[[1, 0], [1]],[[1, 1], [0]]]
-
- nn = new NeuralNetwork(training_sets[0][0].length, 5, training_sets[0][1].length)
- for(var i = 0; i < 10000; i++){
-     r = getRandomInt(0, 4)
-     training_inputs = training_sets[r][0]
-     training_outputs = training_sets[r][1]
-     nn.train(training_inputs, training_outputs)
-     console.log(i, nn.calculate_total_error(training_sets))
-}
-
-*/
 

@@ -128,7 +128,7 @@ var getClassifiedDf = function(df, classes, classCol){
             }
         }
         classifieddf[tempdf.class] = tempdf
-        histogram([tempdf[classCol].data], classCol)
+        histogram([tempdf[classCol].data], classCol, 'count')
     }
     return classifieddf
 }
