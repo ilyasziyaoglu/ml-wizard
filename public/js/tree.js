@@ -46,56 +46,44 @@ document.getElementById('decision-tree').onclick = function(){
         var [X_train, X_test] = trainTestSplit(df)
         var deepest = distinctVals(df[predict].data).length
         var t = tree(X_train, effectedCols, predict, tolerance, deepest)
-        console.log('tree', t)
+        //console.log('tree', t)
         
-        var record = {}
-        var results = []
+        var results = {target: X_test[predict].data.slice(), predicted: []}
         var result
         for(var i = 0; i < X_test.length; i++){
-            for(var j in effectedCols){
-                record[effectedCols[j]] = X_test[effectedCols[j]].data[i]
-            }
-            result = await treePredict(X_train, record)
-            await results.push([X_test[predict].data[i], result])
+            var record = getRow(X_test, i)
+            result = treePredict(t, record)
+            results.predicted.push(result)
         }
-        console.log(results)
-
-        var sayi = 0
-        for(var a in results){
-            if(results[a][0] == results[a][0]){
-                sayi++
-            }
-        }
-        console.log(sayi)
+        //console.log(results)
+        
+        var confMat = confusionMatrix(results)
+        showScore(confMat)
     }
 }
 
 function treePredict(root, record){
+    //console.log(root, record)
     if(root.branches){
-        treePredict(root.branches[record[root.name]])
+        return treePredict(root.branches[record[root.name]], record)
     }
     else {
         return root
     }
 }
 
-function tree(df, cols, predict, tolerance, deepest){
+function tree(df, cols, predict, deepest){
     var predictValues = distinctVals(df[predict].data)
-    var len = df.length
-    var n = predictValues.length
+    var n_classes = predictValues.length
 
-    if(deepest && n > 1){
-        var P = {}
-        for(var i in predictValues){
-            P[predictValues[i]] = count(df[predict].data, predictValues[i]) / len
-        }
+    if(deepest > 0 && n_classes > 1 && cols.length > 0){
     
-        var gaindf = entropy(P)
+        var entropy_S = systemEntropy(df[predict].data, predictValues)
     
         var maxgain = {val: 0}
         var tempgain
-        for(var i in cols){
-            tempgain = gaindf - info(df[cols[i]].data, df[predict].data, predictValues)
+        for(var i = 0; i < cols.length; i++){
+            tempgain = entropy_S - gain(df[cols[i]].data, df[predict].data, predictValues)
             //console.log(cols[i], ': ', tempgain)
             if(tempgain > maxgain.val){
                 maxgain.val = tempgain
@@ -104,17 +92,17 @@ function tree(df, cols, predict, tolerance, deepest){
         }
 
         var root = {name: maxgain.col, branches: {}}
-    
+        cols.splice(cols.indexOf(maxgain.val), 1)
         var distinctValues = distinctVals(df[maxgain.col].data)
-        for(var i in distinctValues){
+        for(var i = 0; i < distinctValues.length; i++){
             //console.log('\n', distinctValues[i])
-            root.branches[distinctValues[i]] = tree(filter(df, [maxgain.col], [distinctValues[i]]), cols, predict, tolerance, deepest-1)
+            root.branches[distinctValues[i]] = tree(filter(df, [maxgain.col], [distinctValues[i]]), cols, predict, deepest-1)
         }
         //console.log(root)
         return root
     }
     else{
-        if(n == 1){
+        if(n_classes == 1){
             return predictValues[0]
         }
         else{
@@ -131,22 +119,25 @@ function tree(df, cols, predict, tolerance, deepest){
     }
 }
 
-function entropy(P){
-    var ent = 0 //entropy
+function systemEntropy(predictArr, predictValues){
+    //probablities
+    var P = {}
+    for(var i in predictValues){
+        P[predictValues[i]] = count(predictArr, predictValues[i]) / predictArr.length
+    }
+    
+    //entropy
+    var ent = 0 
     for(var i in P){
         ent -= P[i] * Math.log2(P[i])
     }
     return ent
 }
 
-function info(arr, predictArr, predictValues){
-    var distinctValues = distinctVals(arr)
-    var n = predictValues.length
-    var len = arr.length
-    var gain = 0
+function gain(arr, predictArr, predictValues){
 
     var count = {}
-    for(var i in arr){
+    for(var i = 0; i < arr.length; i++){
         if(count[arr[i]]){
             count[arr[i]]++
         }
@@ -164,15 +155,18 @@ function info(arr, predictArr, predictValues){
 
     //console.log(count)
 
+    var distinctValues = distinctVals(arr)
+    var gain = 0
     var info
-    for(var i in distinctValues){
+    for(var i = 0; i < distinctValues.length; i++){
         info = 0
-        for(var j in predictValues){
+        for(var j = 0; j < predictValues.length; j++){
             if(count[distinctValues[i] + '-' + predictValues[j]]){
-                info -= (count[distinctValues[i] + '-' + predictValues[j]]/count[distinctValues[i]]) * Math.log2(count[distinctValues[i] + '-' + predictValues[j]]/count[distinctValues[i]])
+                var p = count[distinctValues[i] + '-' + predictValues[j]]/count[distinctValues[i]]
+                info -= p * Math.log2(p)
             }
         }
-        gain += (count[distinctValues[i]]/len) * info
+        gain += (count[distinctValues[i]]/arr.length) * info
     }
     return gain
 }

@@ -79,7 +79,7 @@ function fillNanNoValue(df){
         }
     }
     if(uneffectedCols.length > 0){
-        alert("Some features didn't effected! Because their types(integer) are not supported.\nThese features are: " + uneffectedCols.toString())
+        alertModal("Some features didn't effected! Because their types(integer) are not supported.\nThese features are: " + uneffectedCols.toString(), 'warning')
     }
 }
 
@@ -112,7 +112,7 @@ function fillNanMean(df){
         }
     }
     if(uneffectedCols.length > 0){
-        alert("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString())
+        alertModal("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString(), 'warning')
     }
 }
 
@@ -133,7 +133,7 @@ function fillNanMedian(df){
         }
     }
     if(uneffectedCols.length > 0){
-        alert("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString())
+        alertModal("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString(), 'warning')
     }
 }
 
@@ -153,7 +153,7 @@ function fillNanNumber(df, num){
         }
     }
     if(uneffectedCols.length > 0){
-        alert("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString())
+        alertModal("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString(), 'warning')
     }
 }
 
@@ -173,6 +173,6 @@ function fillNanText(df, text){
         }
     }
     if(uneffectedCols.length > 0){
-        alert("Some features didn't effected! Because their types(integer) are not supported.\nThese features are: " + uneffectedCols.toString())
+        alertModal("Some features didn't effected! Because their types(integer) are not supported.\nThese features are: " + uneffectedCols.toString(), 'warning')
     }
 }

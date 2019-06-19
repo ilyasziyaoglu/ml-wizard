@@ -34,11 +34,48 @@ document.getElementById('regression-modal-submit').onclick = function(){
 
     if(cols.length == 1){
         if(regType == 'Linear Regression'){
-            var reg = lineerRegression(df[cols[0]].data, df[predict].data)
+
+            var [X_train, X_test] = trainTestSplit(df)
+
+            var coef = lineerReg(X_train[cols[0]].data, X_train[predict].data)
+
+            var results = {target: X_test[predict].data.slice(), predicted: []}
+            var result
+            for(var i = 0; i < X_test.length; i++){
+                var record = getRow(X_test, i)
+                result = regPredict(coef, X_test[cols[0]].data[i])
+                results.predicted.push(result)
+            }
+            console.log(results)
+
             var labels = [cols[0] + ' - ' + predict, 'Regression']
-            lineChart([df[predict].data, reg.regression], df[cols[0]].data, labels, ['scatter'], ['markers', 'lines'])
+            lineChart([results.target, results.predicted], X_test[cols[0]].data, labels, ['scatter'], ['markers', 'lines'])
+            
+            var score = getRSquared(regPredict, results.target, X_test[cols[0]].data, coef)
+            var scoreStr = ''
+            for(var i in score){
+                scoreStr += i + ': ' + score[i] + '</br>'
+            }
+            alertModal(scoreStr, 'success')
         }
     }
+}
+
+function regPredict(x, coef){
+    return coef.a + coef.b * x
+}
+
+function lineerRegression(X, Y){
+    //getting coefficients ...
+    coef = lineerReg(X, Y)
+
+    // getting regression line ...
+    regression = []
+    for(i in X){
+        regression.push()
+    }
+
+    return {coefficients: coef, regression: regression}
 }
 
 // function for calculate slope and intercept ...
@@ -69,19 +106,30 @@ function lineerReg(X, Y){
 
 }
 
-function regPredict(coef, x){
-    return coef.a + coef.b * x
-}
+function getRSquared(predict, target, data, coef) {
+    var rPrediction = [];
 
-function lineerRegression(X, Y){
-    //getting coefficients ...
-    coef = lineerReg(X, Y)
-
-    // getting regression line ...
-    regression = []
-    for(i in X){
-        regression.push(regPredict(coef, X[i]))
+    var meanValue = innerSum(target)/target.length // MEAN VALUE
+    var SStot = 0; // THE TOTAL SUM OF THE SQUARES
+    var SSres = 0; // RESIDUAL SUM OF SQUARES
+    var rSquared = 0;
+    
+    for (var n = 0; n < data.length; n++) { 
+        // CALCULATE THE SSTOTAL    
+        SStot += Math.pow(target[n] - meanValue, 2); 
+        // REGRESSION PREDICTION
+        rPrediction.push(predict(data[n], coef));
+        // CALCULATE THE SSRES
+        SSres += Math.pow(rPrediction[n] - target[n], 2);
     }
 
-    return {coefficients: coef, regression: regression}
+    // R SQUARED
+    rSquared = 1 - (SSres / SStot);
+
+    return {
+        meanValue: meanValue,
+        SStot: SStot,
+        SSres: SSres,
+        rSquared: rSquared
+    };
 }

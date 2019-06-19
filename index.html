@@ -187,13 +187,12 @@
         </div>
         <div class="tab-pane" role="tabpanel" aria-labelledby="tab2-tab" id="tab2"><div class="row">
             <div class="col-sm-2">
-                <h5 class="text-center">Features</h5>
-                <ul class="list-group">
-                  <button id="line-chart" type="button">Line Chart</button>
-                  <button id="regression" type="button">Regression</button>
-                  <button id="correlation" type="button">Correlation</button>
-                  <button id="histogram-chart" type="button">Histogram Chart</button>
-                </ul>
+              <div class="btn-group-vertical" role="group" aria-label="Vertical button group" style="display: block; margin: auto;">
+                <button id="line-chart" type="button" class="btn btn-secondary">Line Chart</button>
+                <button id="regression" type="button" class="btn btn-secondary">Regression</button>
+                <button id="correlation" type="button" class="btn btn-secondary">Correlation</button>
+                <button id="histogram-chart" type="button" class="btn btn-secondary">Histogram Chart</button>
+              </div>
             </div>
             <div class="col-sm-10">
                 <div class="input-group"> 
@@ -246,7 +245,7 @@
             </button>
           </div>
           <div id="to-binary-modal-body" class="modal-body">
-            <form>
+            <form id="open-file-modal-form">
               <div class="form-group">
                 <div class="custom-file">
                   <input type="file" class="custom-file-input form-control" id="file">
@@ -266,7 +265,7 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button id="open-file-modal-submit" type="button" data-dismiss="modal" class="btn btn-primary">Ok</button>
+            <button id="open-file-modal-submit" form="open-file-modal-form" type="submit" data-dismiss="modal" class="btn btn-primary">Ok</button>
           </div>
         </div>
       </div>
@@ -430,7 +429,7 @@
     <script src="js/basicOps.js"></script>
     <script src="js/misdata.js"></script>
     <script src="js/prepro.js"></script>
-    <script src="js/algs.js"></script>
+    <script src="js/kmeans.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/regression.js"></script>
     <script src="js/correlation.js"></script>
@@ -438,7 +437,7 @@
     <script src="js/bpAlg.js"></script>
     <script src="js/models.js"></script>
     <script src="js/math.js"></script>
-    <script src="js/tree.js"></script>
     <script src="js/query.js"></script>
+    <script src="js/decision-tree.js"></script>
 </body>
 </html>

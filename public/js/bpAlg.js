@@ -23,8 +23,8 @@ document.getElementById('back-propagation').onclick = function(){
 
     modal_body.appendChild(form)
     $(modal).modal('show')
-
-    modal_submit.onclick = async function(){
+    
+    modal_submit.onclick = function(){
         $(modal).modal('hide')
         LEARNING_RATE = learning_rate_input.value
         var hidden_layer_neurons = hidden_layer_neurons_input.value
@@ -45,7 +45,7 @@ document.getElementById('back-propagation').onclick = function(){
             }
         }
         if(uneffectedCols.length > 0){
-            alert("Some features didn't effected! Because they may be target feature or their types are not numeric.\nThese features are: " + uneffectedCols.toString())
+            alertModal("Some features didn't effected! Because they may be target feature or their types are not numeric.\nThese features are: " + uneffectedCols.toString(), 'warning')
         }
 
         var [raw_X_train, raw_X_test] = trainTestSplit(df)
@@ -79,8 +79,8 @@ document.getElementById('back-propagation').onclick = function(){
         var results = []
         var result
         for(var i = 0; i < X_test.length; i++){
-            result = await nn.feed_forward(X_test[i][0])
-            await results.push([X_test[i][1], result])
+            result = nn.feed_forward(X_test[i][0])
+            results.push([X_test[i][1], result])
         }
         console.log(results)
 

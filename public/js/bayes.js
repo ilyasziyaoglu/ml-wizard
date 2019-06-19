@@ -2,19 +2,16 @@ document.getElementById('bayes').onclick = function(){
     var [modal, modal_body, modal_submit] = createModal('categorization-modal', 'Categorization')
 
     var form  = createElement('form')
-    var form_group = createElement('div', {className: 'form-group'})
-    var predict_select_label = createElement('label', {innerText: 'Select predict feature:'})
-    var predict_select = createElement('select', {type: 'number', className: 'form-control'})
 
+    var predict_select = createElement('select', {type: 'number', className: 'form-control'})
     var cols = df.headers
     for(var i in cols){
         predict_select.appendChild(createElement('option', {value: cols[i], innerText: cols[i]}))
     }
 
+    form = createFormGroup(form, predict_select, 'Select predict feature')
+
     modal_body.appendChild(form)
-    form.appendChild(form_group)
-    form_group.appendChild(predict_select_label)
-    form_group.appendChild(predict_select)
     $(modal).modal('show')
 
     modal_submit.onclick = function(){
@@ -34,30 +31,25 @@ document.getElementById('bayes').onclick = function(){
             }
         }
         if(uneffectedCols.length > 0){
-            alert("Some features didn't effected! Because they may be target feature or their types are not nominal or ordinal .\nThese features are: " + uneffectedCols.toString())
+            alertModal("Some features didn't effected! Because they may be target feature or their types are not nominal or ordinal .\nThese features are: " + uneffectedCols.toString(), 'warning')
         }
 
         var [X_train, X_test] = trainTestSplit(df)
         
         var record = {}
-        var results = []
+        var results = {target: X_test[predict].data.slice(), predicted: []}
         var result
         for(var i = 0; i < X_test.length; i++){
             for(var j in effectedCols){
                 record[effectedCols[j]] = X_test[effectedCols[j]].data[i]
             }
             result = bayes(X_train, record, predict)
-            results.push([X_test[predict].data[i], result])
+            results.predicted.push(result)
         }
         console.log(results)
         
-        var sayi = 0
-        for(var a in results){
-            if(results[a][0] == results[a][0]){
-                sayi++
-            }
-        }
-        console.log(sayi)
+        var confMat = confusionMatrix(results)
+        showScore(confMat)
     }
 }
 

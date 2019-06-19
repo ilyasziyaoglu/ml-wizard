@@ -25,31 +25,6 @@ setTableButton.onclick = function(){
     setTable(df)
 }
 
-var classes = []
-kmeans.onclick = function(){
-    var cols = df.headers
-    var select = document.getElementById('kmeans-modal-predict')
-    
-    for(var i in cols){
-        select.appendChild(createElement('option', {value: cols[i], innerText: cols[i]}))
-    }
-    $("#kmeans-modal").modal("show")
-}
-
-document.getElementById("kmeans-modal-submit").onclick = async function(){
-    var classCount = Math.floor(document.getElementById("kmeans-modal-class-count").value)
-    var tolerance = Math.floor(document.getElementById("kmeans-modal-tolerance").value)
-    var kmeansPredict = document.getElementById('kmeans-modal-predict').value
-    //element counts for per center at the begining
-    elementCounts = new Array(classCount).fill(1)
-
-    await calcDissims()
-    await dissim()
-    classes = await prepareClasses(df.length, classCount)
-    await kmeans(df, classes, classCount, elementCounts, tolerance)
-    await getClassifiedDf(df, classes, kmeansPredict)
-}
-
 headSelectOnChange = function(){
     var cols = getSelectedCols()
     for(var i = 0; i < cols.length; i++){
@@ -76,16 +51,32 @@ document.getElementById('del-rows').onclick = function(){
     setTable(df)
 }
 
+function alertModal(message, succes){
+    var [modal, modal_body, modal_submit] = createModal('alert-modal', 'Info')
+
+    alert = createElement('div', {className: 'alert alert-' + succes, role: 'alert', innerHTML: message})
+
+    modal_body.appendChild(alert)
+    $(modal).modal('show')
+
+    modal_submit.onclick = function(){
+        $(modal).modal('hide')
+        modal.remove()
+    }
+}
+
 function createModal(modal_id, modal_title){
     var modal = createElement('div', {id: modal_id, className: 'modal', tabindex: "-1", role: "dialog"})
         var modal_dialog = createElement('div', {className: 'modal-dialog', role: 'document'})
             var modal_content = createElement('div', {className: 'modal-content'})
                 var modal_header = createElement('div', {className: 'modal-header'})
                     modal_header.appendChild(createElement('h5', {innerText: modal_title, className: 'modal-title'}))
-                    modal_header.appendChild(createElement('button', {type: 'butoon', className: 'close', 'data-dismiss': 'modal', 'aria-label': 'Close', innerHTML: '<span aria-hidden="true">&times;</span>'}))
+                    var close_modal = createElement('button', {type: 'butoon', className: 'close', innerHTML: '<span aria-hidden="true">&times;</span>'})
+                    $(close_modal).attr('data-dismiss', 'modal')
+                    modal_header.appendChild(close_modal)
                 var modal_body = createElement('div', {className: 'modal-body'})
                 var modal_footer = createElement('div', {className: 'modal-footer'})
-                    var modal_submit = createElement('button', {type: 'button', 'data-dismiss': 'modal', className: 'btn btn-primary', innerText: 'Ok'})
+                    var modal_submit = createElement('button', {type: 'submit', form: 'modal-form', className: 'btn btn-primary', innerText: 'Ok'})
                     modal_footer.appendChild(modal_submit)
 
                 modal.appendChild(modal_dialog)

@@ -10,7 +10,7 @@ document.getElementById("min-max-scaler").onclick = function(){
         }
     }
     if(uneffectedCols.length > 0){
-        alert("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString())
+        alertModal("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString(), 'warning')
     }
     setTable(df)
 }
@@ -49,7 +49,7 @@ document.getElementById('std-scaler').onclick = function(){
         }
     }
     if(uneffectedCols.length > 0){
-        alert("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString())
+        alertModal("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString(), 'warning')
     }
     setTable(df)
 }
@@ -80,7 +80,7 @@ document.getElementById('nominal-encoder').onclick = function(){
         }
     }
     if(uneffectedCols.length > 0){
-        alert("Some features didn't effected! Because their types are not Nominal.\nThese features are: " + uneffectedCols.toString())
+        alertModal("Some features didn't effected! Because their types are not Nominal.\nThese features are: " + uneffectedCols.toString(), 'warning')
     }
     setTable(df)
 }
@@ -113,7 +113,7 @@ document.getElementById("ordinal-encoder").onclick = function(){
         }
     }
     if(uneffectedCols.length > 0){
-        alert("Some features didn't effected! Because their types are not encoded numeric.\nThese features are: " + uneffectedCols.toString())
+        alertModal("Some features didn't effected! Because their types are not encoded numeric.\nThese features are: " + uneffectedCols.toString(), 'warning')
     }
 }
 
@@ -132,7 +132,7 @@ document.getElementById("ordinal-encoder-modal-submit").onclick = function(){
                 df[cols[i]].data = labelEncoder(df[cols[i]].data, df[cols[i]].labelEncoderMap)
             }
             else{
-                alert("You must select different values for feature " + cols[i] + "!")
+                alertModal("You must select different values for feature " + cols[i] + "!", 'danger')
             }
         }
     }
@@ -157,7 +157,7 @@ document.getElementById('label-decoder').onclick = function(){
         }
     }
     if(uneffectedCols.length > 0){
-        alert("Some features didn't effected! Because their types are not encoded numeric.\nThese features are: " + uneffectedCols.toString())
+        alertModal("Some features didn't effected! Because their types are not encoded numeric.\nThese features are: " + uneffectedCols.toString(), 'warning')
     }
     setTable(df)
 }
@@ -238,7 +238,7 @@ document.getElementById('categorization').onclick = function(){
             }
         }
         if(uneffectedCols.length > 0){
-            alert("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString())
+            alertModal("Some features didn't effected! Because their types are not numeric.\nThese features are: " + uneffectedCols.toString(), 'warning')
         }
         setTable(df)
     }

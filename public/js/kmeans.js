@@ -1,3 +1,29 @@
+var classes = []
+kmeans.onclick = function(){
+    var cols = df.headers
+    var select = document.getElementById('kmeans-modal-predict')
+    
+    for(var i in cols){
+        select.appendChild(createElement('option', {value: cols[i], innerText: cols[i]}))
+    }
+    $("#kmeans-modal").modal("show")
+}
+
+document.getElementById("kmeans-modal-submit").onclick = async function(){
+    var classCount = Math.floor(document.getElementById("kmeans-modal-class-count").value)
+    var tolerance = Math.floor(document.getElementById("kmeans-modal-tolerance").value)
+    var kmeansPredict = document.getElementById('kmeans-modal-predict').value
+    //element counts for per center at the begining
+    elementCounts = new Array(classCount).fill(1)
+
+    await calcDissims()
+    await dissim()
+    classes = await prepareClasses(df.length, classCount)
+    await kmeans(df, classes, classCount, elementCounts, tolerance)
+    var classifiedDf = await getClassifiedDf(df, classes, kmeansPredict)
+    console.log(classifiedDf)
+}
+
 function calcDissims(){
     for(var i in df.headers){
         switch(df[df.headers[i]].type){
@@ -14,7 +40,7 @@ function dissim(){
         disSim(df, cols)
     }
     else {
-        alert("You must choose columns for this operation!")
+        alertModal("You must choose columns for this operation!", 'warning')
     }
 }
 

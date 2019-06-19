@@ -70,10 +70,15 @@ function getRow(df, index){
 
 function deleteCols(df, cols){
     for(var i in cols){
+        //delete from template
+        delete df.template[cols[i]]
+        df.template.headers.splice(df.headers.indexOf(cols[i]), 1)
+        //delete from df
         delete df[cols[i]]
-        df.headers.splice(getIndexes(df.headers, cols[i])[0], 1)
+        df.headers.splice(df.headers.indexOf(cols[i]), 1)
     }
     setTable(df)
+    return df
 }
 
 function deleteRows(df, rows){
@@ -84,6 +89,7 @@ function deleteRows(df, rows){
         df.length--
     }
     setTable(df)
+    return df
 }
 
 function nominalDisSim(df, col){
