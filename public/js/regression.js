@@ -42,14 +42,13 @@ document.getElementById('regression-modal-submit').onclick = function(){
             var results = {target: X_test[predict].data.slice(), predicted: []}
             var result
             for(var i = 0; i < X_test.length; i++){
-                var record = getRow(X_test, i)
-                result = regPredict(coef, X_test[cols[0]].data[i])
+                result = regPredict(X_test[cols[0]].data[i], coef)
                 results.predicted.push(result)
             }
             console.log(results)
 
             var labels = [cols[0] + ' - ' + predict, 'Regression']
-            lineChart([results.target, results.predicted], X_test[cols[0]].data, labels, ['scatter'], ['markers', 'lines'])
+            lineChart([results.target, results.predicted], X_test[cols[0]].data, labels, ['scatter', 'scatter'], ['markers', 'lines'])
             
             var score = getRSquared(regPredict, results.target, X_test[cols[0]].data, coef)
             var scoreStr = ''

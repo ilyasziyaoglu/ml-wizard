@@ -20,24 +20,11 @@ document.getElementById('decision-tree').onclick = function(){
         modal.remove()
 
         var cols = getSelectedCols()
-
-        var uneffectedCols = []
-        var effectedCols = []
-        for(var i in cols){
-            if((df[cols[i]].type == 'nominal' || df[cols[i]].type == 'ordinal') && cols[i] != predict){
-                effectedCols.push(cols[i])
-            }
-            else {
-                uneffectedCols.push(cols[i])
-            }
-        }
-        if(uneffectedCols.length > 0){
-            alertModal("Some features didn't effected! Because they may be target feature or their types are not nominal or ordinal .\nThese features are: " + uneffectedCols.toString(), 'warning')
-        }
+        cols.splice(cols.indexOf(predict))
 
         var ignoreCols = []
         for(var i = 0; i < df.headers.length; i++){
-            if(!effectedCols.includes(df.headers[i])){
+            if(!cols.includes(df.headers[i])){
                 ignoreCols.push(df.headers[i])
             }
         }
